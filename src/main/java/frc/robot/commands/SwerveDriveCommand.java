@@ -64,13 +64,13 @@ public class SwerveDriveCommand extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    System.out.println(getName() + " interupted!");
+    System.out.println(getName() + " interrupted!");
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    System.out.println(getName() + " ended!");
+    //System.out.println(getName() + " ended!");
     return false;
   }
 }

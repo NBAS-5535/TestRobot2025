@@ -48,10 +48,10 @@ public class RobotContainer {
                                                       () -> m_driverController.getRawAxis(OperatorConstants.kDriverXAxis),
                                                       () -> m_driverController.getRawAxis(OperatorConstants.kDriverRotAxis)
                                                       ));
-        m_driverController.b().onTrue(new SwerveDriveComboMoveCommand(m_swerveSubsystem, 0.25, 0., 0., 0.));
+        m_driverController.b().onTrue(new SwerveDriveComboMoveCommand(m_swerveSubsystem, 0.25, 0., 0., 10.));
         m_driverController.a().onTrue(new SwerveDriveComboMoveCommand(m_swerveSubsystem, 0., 0., 0., 0.));
     
-        //m_driverController.x().onTrue(new SwerveDriveForwardTimerCommand(m_swerveSubsystem, 0.6, 0, 10.)); 
+        m_driverController.x().onTrue(new SwerveDriveComboMoveCommand(m_swerveSubsystem, 0.25, 0., 0., 10.)); 
   }
 
   /**

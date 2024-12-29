@@ -33,8 +33,10 @@ public class SwerveDriveComboMoveCommand extends Command {
     timeToStop = 0.;
     if ( timer > 0.) {
       timeToStop = Timer.getFPGATimestamp() + timer;
+      SmartDashboard.putNumber("timeToStop", timeToStop);
     }
-    SmartDashboard.putNumber("timeToStop", timeToStop);
+    SmartDashboard.putNumber("timer", timer);
+    
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(m_swerve);
   }
@@ -48,6 +50,7 @@ public class SwerveDriveComboMoveCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    SmartDashboard.putNumber("time now", Timer.getFPGATimestamp());
     m_swerve.showChasisSpeedsOnLogger("execute");
     m_swerve.setChasisSpeeds(m_chasisSpeeds);
   }
@@ -63,9 +66,12 @@ public class SwerveDriveComboMoveCommand extends Command {
   public boolean isFinished() {
     if ( timeToStop > 0.) {
       System.out.println(getName() + " not finished!");
-      return isTimedOut();
+      if ( isTimedOut() ) {
+        m_swerve.stopModules();
+      }
+      return true;
     } else {
-      System.out.println(getName() + " finished!");
+      //System.out.println(getName() + " finished!");
       return false;
     }
   }
