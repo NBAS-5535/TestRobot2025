@@ -35,6 +35,9 @@ public class SwerveModule {
         driveMotor = new CANSparkMax(driveMotorCANId, MotorType.kBrushless);
         steerMotor = new CANSparkMax(steerMotorCANId, MotorType.kBrushless);
 
+        driveMotor.restoreFactoryDefaults();
+        steerMotor.restoreFactoryDefaults();
+        
         driveMotor.setInverted(driveMotorInverted);
         steerMotor.setInverted(steerMotorInverted);
 
@@ -47,6 +50,8 @@ public class SwerveModule {
         currentState = new SwerveModuleState(0., Rotation2d.fromDegrees(0.));
 
         resetEncoders();
+
+        System.out.println("SwerveModule:" + String.valueOf(driveMotorCANId) + " - " + String.valueOf(steerMotorCANId));
 
     }
 
@@ -89,5 +94,21 @@ public class SwerveModule {
     public void stop() {
         driveMotor.set(0);
         steerMotor.set(0);
+    }
+
+    public void setSpeed(double speed) {
+        driveMotor.set(speed);
+        steerMotor.set(speed);
+    }
+
+    public void setSpeed(String motorType, double speed){
+        switch ( motorType) {
+            case "drive":
+                driveMotor.set(speed);
+                break;
+            case "steer":
+                steerMotor.set(speed);
+                break;
+        }
     }
 }

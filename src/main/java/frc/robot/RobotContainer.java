@@ -6,10 +6,12 @@ package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
+import frc.robot.commands.SimpleTestCommand;
 import frc.robot.commands.SwerveDriveComboMoveCommand;
 import frc.robot.commands.SwerveDriveCommand;
 import frc.robot.subsystems.SwerveSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -48,10 +50,14 @@ public class RobotContainer {
                                                       () -> m_driverController.getRawAxis(OperatorConstants.kDriverXAxis),
                                                       () -> m_driverController.getRawAxis(OperatorConstants.kDriverRotAxis)
                                                       ));
-        m_driverController.b().onTrue(new SwerveDriveComboMoveCommand(m_swerveSubsystem, 0.25, 0., 0., 10.));
-        m_driverController.a().onTrue(new SwerveDriveComboMoveCommand(m_swerveSubsystem, 0., 0., 0., 0.));
-    
-        m_driverController.x().onTrue(new SwerveDriveComboMoveCommand(m_swerveSubsystem, 0.25, 0., 0., 10.)); 
+        //m_driverController.b().onTrue(new SwerveDriveComboMoveCommand(m_swerveSubsystem, 0.25, 0., 0., 10.));
+        //m_driverController.a().onTrue(new SwerveDriveComboMoveCommand(m_swerveSubsystem, 0., 0., 0., 0.));
+        String label = "RF";
+        m_driverController.x().whileTrue(new SimpleTestCommand(m_swerveSubsystem, label, 0.1)); 
+        m_driverController.a().whileTrue(new SimpleTestCommand(m_swerveSubsystem, "drive"));
+        m_driverController.b().whileTrue(new SimpleTestCommand(m_swerveSubsystem, "steer")); 
+        m_driverController.y().onTrue(new SimpleTestCommand(m_swerveSubsystem, 0.));
+
   }
 
   /**

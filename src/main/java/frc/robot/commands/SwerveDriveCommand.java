@@ -70,7 +70,7 @@ public class SwerveDriveCommand extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    //System.out.println(getName() + " ended!");
+    System.out.println(getName() + " ended!");
     return false;
   }
 }

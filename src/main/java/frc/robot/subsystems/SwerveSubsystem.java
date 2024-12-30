@@ -60,6 +60,7 @@ public class SwerveSubsystem extends SubsystemBase {
                 new Translation2d(-OffsetConstants.chasisXOffset, OffsetConstants.chasisYOffset));
 
   public SwerveSubsystem() {
+    System.out.println("SwerveSubsystem: Ctor");
   }
 
   /**
@@ -141,4 +142,29 @@ public class SwerveSubsystem extends SubsystemBase {
         }
       }
     }
+
+  public void moveMotors(String motorLabel, double speed){
+    switch(motorLabel){
+      case "FL":
+        m_frontLeftModule.setSpeed(speed);
+        break;
+      case "FR":
+        m_frontRightModule.setSpeed(speed);
+        break;
+      case "BL":
+        m_backLeftModule.setSpeed(speed);
+        break;
+      case "BR":
+        m_backRightModule.setSpeed(speed);
+        break;
+    }
+  }
+
+  public void moveMotorsByType(String motorType, double speed){
+    m_frontLeftModule.setSpeed(motorType, speed);
+    m_frontRightModule.setSpeed(motorType, speed);
+    m_backLeftModule.setSpeed(motorType, speed);
+    m_backRightModule.setSpeed(motorType, speed);
+  
+  }
 }
