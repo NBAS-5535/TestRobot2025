@@ -36,20 +36,20 @@ public final class Constants {
   }
 
   public static final class SwerveMotorDeviceConstants {
-    public static final int kFrontLeftSteerMotorCANId = 14;
-    public static final int kFrontRightSteerMotorCANId = 15;
-    public static final int kBackRightSteerMotorCANId = 16;
-    public static final int kBackLeftSteerMotorCANId = 17;
+    public static final int kFrontLeftSteerMotorCANId = 11;
+    public static final int kFrontRightSteerMotorCANId = 8;
+    public static final int kBackRightSteerMotorCANId = 15;
+    public static final int kBackLeftSteerMotorCANId = 6;
 
-    public static final int kFrontLeftDriveMotorCANId = 20;
-    public static final int kFrontRightDriveMotorCANId = 21;
-    public static final int kBackRightDriveMotorCANId = 22;
-    public static final int kBackLeftDriveMotorCANId = 23;
+    public static final int kFrontLeftDriveMotorCANId = 10;
+    public static final int kFrontRightDriveMotorCANId = 9;
+    public static final int kBackRightDriveMotorCANId = 14;
+    public static final int kBackLeftDriveMotorCANId = 7;
 
-    public static final int kFrontLeftCANcoderCANId = 10;
-    public static final int kFrontRightCANcoderCANId = 11;
-    public static final int kBackRightCANcoderCANId = 12;
-    public static final int kBackLeftCANcoderCANId = 13;
+    public static final int kFrontLeftCANcoderCANId = 20;
+    public static final int kFrontRightCANcoderCANId = 21;
+    public static final int kBackRightCANcoderCANId = 22;
+    public static final int kBackLeftCANcoderCANId = 23;
 
     public static final double kFrontLeftCANcoderOffsetRad = 0.;
     public static final double kFrontRightCANcoderOffsetRad = 0.;

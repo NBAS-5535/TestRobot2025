@@ -5,17 +5,24 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.RobotController;
 import frc.robot.Constants.ModuleConstants;
 
+import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 /** Add your docs here. */
 public class SwerveModule {
     private final CANSparkMax driveMotor;
     private final CANSparkMax steerMotor;
+
+    private final RelativeEncoder driveEncoder;
+    private final RelativeEncoder steerEncoder;
 
     private final PIDController steerPidController;
 
@@ -31,17 +38,50 @@ public class SwerveModule {
         driveMotor.setInverted(driveMotorInverted);
         steerMotor.setInverted(steerMotorInverted);
 
+        driveEncoder = driveMotor.getEncoder();
+        steerEncoder = steerMotor.getEncoder();
+            
         steerPidController = new PIDController(ModuleConstants.kPSteer, 0., 0.);
         steerPidController.enableContinuousInput(-Math.PI, Math.PI);
 
-        currentState = new SwerveModuleState();
+        currentState = new SwerveModuleState(0., Rotation2d.fromDegrees(0.));
 
+        resetEncoders();
+
+    }
+
+    public double getDrivePosition() {
+        return driveEncoder.getPosition();
+    }
+
+    public double getTurningPosition() {
+        return steerEncoder.getPosition();
+    }
+
+    public double getDriveVelocity() {
+        return driveEncoder.getVelocity();
+    }
+
+    public double getTurningVelocity() {
+        return steerEncoder.getVelocity();
+    }
+
+    public void resetEncoders() {
+        driveEncoder.setPosition(0);
+        steerEncoder.setPosition(0.);
+    }
+
+    public SwerveModuleState getState1() {
+        //Rotation2d angle = new Rotation2d(getTurningPosition());
+        //currentState = SwerveModuleState(getDriveVelocity(), angle);
+        return currentState;
     }
 
     public SwerveModuleState getState(){
         return currentState;
     }
-  
+
+
     public void setState(SwerveModuleState newState){
         currentState = newState;
     }
