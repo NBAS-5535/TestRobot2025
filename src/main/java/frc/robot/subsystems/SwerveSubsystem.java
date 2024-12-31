@@ -4,20 +4,26 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OffsetConstants;
 import frc.robot.Constants.SwerveMotorDeviceConstants;
 
 public class SwerveSubsystem extends SubsystemBase {
   /** Creates a new Subsystem. */
 
-  private final SwerveModule m_frontLeftModule = new SwerveModule(
+  private static final SwerveModule m_frontLeftModule = new SwerveModule(
           SwerveMotorDeviceConstants.kFrontLeftDriveMotorCANId,
           SwerveMotorDeviceConstants.kFrontLeftSteerMotorCANId,
           SwerveMotorDeviceConstants.kFrontLeftDriveMotorInverted,
@@ -26,7 +32,7 @@ public class SwerveSubsystem extends SubsystemBase {
           SwerveMotorDeviceConstants.kFrontLeftCANcoderOffsetRad,
           SwerveMotorDeviceConstants.kFrontLeftCANcoderInverted);
 
-  private final SwerveModule m_frontRightModule = new SwerveModule(
+  private static final SwerveModule m_frontRightModule = new SwerveModule(
           SwerveMotorDeviceConstants.kFrontRightDriveMotorCANId,
           SwerveMotorDeviceConstants.kFrontRightSteerMotorCANId,
           SwerveMotorDeviceConstants.kFrontRightDriveMotorInverted,
@@ -35,7 +41,7 @@ public class SwerveSubsystem extends SubsystemBase {
           SwerveMotorDeviceConstants.kFrontRightCANcoderOffsetRad,
           SwerveMotorDeviceConstants.kFrontRightCANcoderInverted);
 
-  private final SwerveModule m_backLeftModule = new SwerveModule(
+  private static final SwerveModule m_backLeftModule = new SwerveModule(
           SwerveMotorDeviceConstants.kBackLeftDriveMotorCANId,
           SwerveMotorDeviceConstants.kBackLeftSteerMotorCANId,
           SwerveMotorDeviceConstants.kBackLeftDriveMotorInverted,
@@ -44,7 +50,7 @@ public class SwerveSubsystem extends SubsystemBase {
           SwerveMotorDeviceConstants.kBackLeftCANcoderOffsetRad,
           SwerveMotorDeviceConstants.kBackLeftCANcoderInverted);
 
-  private final SwerveModule m_backRightModule = new SwerveModule(
+  private static final SwerveModule m_backRightModule = new SwerveModule(
           SwerveMotorDeviceConstants.kBackRightDriveMotorCANId,
           SwerveMotorDeviceConstants.kBackRightSteerMotorCANId,
           SwerveMotorDeviceConstants.kBackRightDriveMotorInverted,
@@ -53,14 +59,29 @@ public class SwerveSubsystem extends SubsystemBase {
           SwerveMotorDeviceConstants.kBackRightCANcoderOffsetRad,
           SwerveMotorDeviceConstants.kBackRightCANcoderInverted);
 
+  private static Translation2d m_frontLeftLocation  = new Translation2d(+OffsetConstants.chasisXOffset, -OffsetConstants.chasisYOffset);
+  private static Translation2d m_frontRightLocation = new Translation2d(+OffsetConstants.chasisXOffset, +OffsetConstants.chasisYOffset);
+  private static Translation2d m_backLeftLocation   = new Translation2d(-OffsetConstants.chasisXOffset, -OffsetConstants.chasisYOffset);
+  private static Translation2d m_backRightLocation  = new Translation2d(-OffsetConstants.chasisXOffset, +OffsetConstants.chasisYOffset);
+  
   public static final SwerveDriveKinematics m_swerveDriveKinematics = new SwerveDriveKinematics(
-                new Translation2d(OffsetConstants.chasisXOffset, -OffsetConstants.chasisYOffset),
-                new Translation2d(OffsetConstants.chasisXOffset, OffsetConstants.chasisYOffset),
-                new Translation2d(-OffsetConstants.chasisXOffset, -OffsetConstants.chasisYOffset),
-                new Translation2d(-OffsetConstants.chasisXOffset, OffsetConstants.chasisYOffset));
+    m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation
+  );
+
+  private static final SwerveDriveOdometry m_odometer = new SwerveDriveOdometry(m_swerveDriveKinematics, new Rotation2d(0), 
+    new SwerveModulePosition[] {
+    m_frontLeftModule.getPosition(),
+    m_frontRightModule.getPosition(),
+    m_backLeftModule.getPosition(),
+    m_backRightModule.getPosition()
+  });
+
+  private final StructArrayPublisher<SwerveModuleState> publisher = NetworkTableInstance.getDefault()
+      .getStructArrayTopic("/SwerveStates", SwerveModuleState.struct).publish();
 
   public SwerveSubsystem() {
     System.out.println("SwerveSubsystem: Ctor");
+    
   }
 
   /**
@@ -95,15 +116,25 @@ public class SwerveSubsystem extends SubsystemBase {
   @Override
   public void simulationPeriodic() {
     // This method will be called once per scheduler run during simulation
+    double [] currentState = getCurrentChasisSpeeds();
+    publisher.set(new SwerveModuleState[] {
+      new SwerveModuleState(currentState[1], Rotation2d.fromDegrees(currentState[0])),
+      new SwerveModuleState(currentState[3], Rotation2d.fromDegrees(currentState[2])),
+      new SwerveModuleState(currentState[5], Rotation2d.fromDegrees(currentState[4])),
+      new SwerveModuleState(currentState[7], Rotation2d.fromDegrees(currentState[6]))
+    });
   }
 
   public void setChasisSpeeds(ChassisSpeeds speeds) {
         SwerveModuleState[] moduleStates = m_swerveDriveKinematics.toSwerveModuleStates(speeds); 
+        SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, DriveConstants.kPhysicalMaxSpeedMetersPerSecond);
 
         m_frontLeftModule.setState(moduleStates[0]);
         m_frontRightModule.setState(moduleStates[1]);
         m_backLeftModule.setState(moduleStates[2]);
         m_backRightModule.setState(moduleStates[3]);
+
+        showChasisSpeedsOnLogger("module");
     }
 
     public double[] getCurrentChasisSpeeds() {

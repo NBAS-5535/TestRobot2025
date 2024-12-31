@@ -73,6 +73,17 @@ public final class Constants {
 
   }
 
+  public static final class DriveConstants {
+    public static final double kPhysicalMaxSpeedMetersPerSecond = 5;
+    public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 2 * 2 * Math.PI;
+
+    public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond / 4;
+    public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = //
+            kPhysicalMaxAngularSpeedRadiansPerSecond / 4;
+    public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 3;
+    public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 3;
+  }
+
   public static final class ModuleConstants {
     public static final double kWheelDiameterMeters = Units.inchesToMeters(4);
     public static final double kDriveMotorGearRatio = 1 / 5.8462;
@@ -88,7 +99,7 @@ public final class Constants {
     public static final double unitPerRotation = 42.;
   }
 
-
+  public static boolean simtest = false;
   public static final class SimulationSettings {
 
     public static final double AutonomousExampleSpeed0 = 0.3;

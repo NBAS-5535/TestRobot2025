@@ -4,11 +4,13 @@
 
 package frc.robot.commands;
 
+import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.SwerveSubsystem;
 
 import java.util.function.Supplier;
 
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 
@@ -20,6 +22,8 @@ public class SwerveDriveCommand extends Command {
   // run functions and use the return value within each command
   private final Supplier<Double> m_moveForwardFunction, m_moveLeftFunction, m_turnFunction;
 
+  private final SlewRateLimiter xLimiter, yLimiter, turningLimiter;
+
   /**
    * Creates a new ExampleCommand.
    *
@@ -30,6 +34,11 @@ public class SwerveDriveCommand extends Command {
     this.m_moveLeftFunction = moveLeft;
     this.m_moveForwardFunction = moveForward;
     this.m_turnFunction = rotate;
+
+    this.xLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
+    this.yLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
+    this.turningLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAngularAccelerationUnitsPerSecond);
+
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(m_swerve);
   }
@@ -54,10 +63,14 @@ public class SwerveDriveCommand extends Command {
     turnSpeed = Math.abs(turnSpeed) > OperatorConstants.kDeadband ? turnSpeed : 0.0;
 
     // make driving smoother
+    forwardSpeed = xLimiter.calculate(forwardSpeed) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond;
+    leftSpeed = yLimiter.calculate(leftSpeed) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond;
+    turnSpeed = turningLimiter.calculate(turnSpeed)
+                * DriveConstants.kTeleDriveMaxAngularSpeedRadiansPerSecond;
 
     // chasis speeds
     ChassisSpeeds chassisSpeeds = new ChassisSpeeds(forwardSpeed, leftSpeed, turnSpeed);
-    m_swerve.showChasisSpeedsOnLogger("joystick");
+    //m_swerve.showChasisSpeedsOnLogger("joystick");
     m_swerve.setChasisSpeeds(chassisSpeeds);
   }
 
@@ -70,7 +83,7 @@ public class SwerveDriveCommand extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    System.out.println(getName() + " ended!");
+    //System.out.println(getName() + " ended!");
     return false;
   }
 }

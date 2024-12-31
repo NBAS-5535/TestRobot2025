@@ -14,8 +14,8 @@ public class SwerveDriveComboMoveCommand extends Command {
   /** Creates a new SwerveDriveComboMoveCommand. */
   private final SwerveSubsystem m_swerve;
 
-  //private final double forwardSpeed, leftSpeed, turnSpeed;
-  private ChassisSpeeds m_chasisSpeeds;
+  private final double forwardSpeed, leftSpeed, turnSpeed, timer;
+  private ChassisSpeeds m_chassisSpeeds;
 
   private double timeToStop;
 
@@ -23,20 +23,13 @@ public class SwerveDriveComboMoveCommand extends Command {
                                    double leftSpeed, double turnSpeed, double timer) {
 
     this.m_swerve = swerve;
-    //this.forwardSpeed = forwardSpeed;
-    //this.leftSpeed = leftSpeed;
-    //this.turnSpeed = turnSpeed;
+    this.forwardSpeed = forwardSpeed;
+    this.leftSpeed = leftSpeed;
+    this.turnSpeed = turnSpeed;
+    this.timer = timer;
 
-    this.m_chasisSpeeds = new ChassisSpeeds(forwardSpeed, leftSpeed, turnSpeed);
-
-    // check if there is a timer set
-    timeToStop = 0.;
-    if ( timer > 0.) {
-      timeToStop = Timer.getFPGATimestamp() + timer;
-      SmartDashboard.putNumber("timeToStop", timeToStop);
-    }
-    SmartDashboard.putNumber("timer", timer);
-    
+    //this.m_chassisSpeeds = new ChassisSpeeds(forwardSpeed, leftSpeed, turnSpeed);
+   
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(m_swerve);
   }
@@ -44,6 +37,13 @@ public class SwerveDriveComboMoveCommand extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    // check if there is a timer set
+    timeToStop = 0.;
+    if ( timer > 0.) {
+      timeToStop = Timer.getFPGATimestamp() + timer;
+      SmartDashboard.putNumber("timeToStop", timeToStop);
+    }
+    SmartDashboard.putNumber("timer", timer);
     System.out.println(getName() + " started!");
   }
 
@@ -52,28 +52,35 @@ public class SwerveDriveComboMoveCommand extends Command {
   public void execute() {
     SmartDashboard.putNumber("time now", Timer.getFPGATimestamp());
     m_swerve.showChasisSpeedsOnLogger("execute");
-    m_swerve.setChasisSpeeds(m_chasisSpeeds);
+    m_chassisSpeeds = new ChassisSpeeds(forwardSpeed, leftSpeed, turnSpeed);
+    m_swerve.setChasisSpeeds(m_chassisSpeeds);
+    //System.out.println(Timer.getFPGATimestamp());
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     System.out.println(getName() + " interrupted!");
+    m_swerve.stopModules();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
+    /*
     if ( timeToStop > 0.) {
-      System.out.println(getName() + " not finished!");
+      System.out.println(getName() + " not finished!" + String.valueOf(Timer.getFPGATimestamp()));
       if ( isTimedOut() ) {
         m_swerve.stopModules();
+        return false;
       }
       return true;
     } else {
-      //System.out.println(getName() + " finished!");
+      System.out.println(getName() + " finished!" + String.valueOf(Timer.getFPGATimestamp()));;
       return false;
     }
+    */
+    return isTimedOut();
   }
 
   private boolean isTimedOut(){
