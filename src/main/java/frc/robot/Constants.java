@@ -99,6 +99,10 @@ public final class Constants {
     public static final double unitPerRotation = 42.;
   }
 
+  public static final class DeviceConstants{
+    public static final int gyroscopeChannelId = 1;
+
+  }
   public static boolean simtest = false;
   public static final class SimulationSettings {
 

@@ -4,6 +4,9 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.hardware.Pigeon2;
+
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -16,6 +19,7 @@ import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.DeviceConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OffsetConstants;
 import frc.robot.Constants.SwerveMotorDeviceConstants;
@@ -76,10 +80,16 @@ public class SwerveSubsystem extends SubsystemBase {
     m_backRightModule.getPosition()
   });
 
+  // set up pigeon2
+  private static final Pigeon2 gyro = new Pigeon2(DeviceConstants.gyroscopeChannelId, "rio");
+
   private final StructArrayPublisher<SwerveModuleState> publisher = NetworkTableInstance.getDefault()
       .getStructArrayTopic("/SwerveStates", SwerveModuleState.struct).publish();
 
+  double yawOffset, rotationOffset;
+
   public SwerveSubsystem() {
+    getGyroOffsets();
     System.out.println("SwerveSubsystem: Ctor");
     
   }
@@ -111,6 +121,18 @@ public class SwerveSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    getGyroOffsets();
+    SmartDashboard.putNumberArray("gyro offsets", new double[]{yawOffset, rotationOffset});
+
+    m_odometer.update(getRotation2d(), new SwerveModulePosition[] {
+      m_frontLeftModule.getPosition(),
+      m_frontRightModule.getPosition(),
+      m_backLeftModule.getPosition(),
+      m_backRightModule.getPosition()
+    });
+    SmartDashboard.putNumber("Robot Heading", getHeading());
+    SmartDashboard.putString("Robot Location", getPose().getTranslation().toString());
+
   }
 
   @Override
@@ -197,5 +219,35 @@ public class SwerveSubsystem extends SubsystemBase {
     m_backLeftModule.setSpeed(motorType, speed);
     m_backRightModule.setSpeed(motorType, speed);
   
+  }
+
+  public void zeroHeading() {
+    gyro.reset();
+  }
+
+  public double getHeading() {
+    return Math.IEEEremainder(gyro.getAngle(), 360);
+  }
+
+  public Rotation2d getRotation2d() {
+    return Rotation2d.fromDegrees(getHeading());
+  }
+
+  public Pose2d getPose() {
+        return m_odometer.getPoseMeters();
+    }
+
+  public void resetOdometry(Pose2d pose) {
+      m_odometer.resetPosition(getRotation2d(), new SwerveModulePosition[] {
+        m_frontLeftModule.getPosition(),
+        m_frontRightModule.getPosition(),
+        m_backLeftModule.getPosition(),
+        m_backRightModule.getPosition()
+      }, pose);
+  }
+
+  public void getGyroOffsets(){
+    yawOffset = gyro.getYaw().getValueAsDouble();
+    rotationOffset = gyro.getRotation2d().getRadians();
   }
 }
