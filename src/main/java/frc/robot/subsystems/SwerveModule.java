@@ -12,6 +12,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
 
 import com.revrobotics.CANEncoder;
@@ -90,6 +92,10 @@ public class SwerveModule {
 
     public void setState(SwerveModuleState newState){
         currentState = newState;
+        SmartDashboard.putNumber("speed", newState.speedMetersPerSecond);
+        SmartDashboard.putNumber("turn", newState.angle.getDegrees());
+        driveMotor.set(newState.speedMetersPerSecond / DriveConstants.kPhysicalMaxSpeedMetersPerSecond);
+        steerMotor.set(steerPidController.calculate(getTurningPosition(), newState.angle.getRadians()));
     }
   
     public void stop() {
@@ -99,7 +105,7 @@ public class SwerveModule {
 
     public void setSpeed(double speed) {
         driveMotor.set(speed);
-        steerMotor.set(speed);
+        steerMotor.set(speed/2.);
     }
 
     public void setSpeed(String motorType, double speed){

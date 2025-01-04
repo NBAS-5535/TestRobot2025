@@ -36,25 +36,25 @@ public final class Constants {
   }
 
   public static final class SwerveMotorDeviceConstants {
-    public static final int kFrontLeftSteerMotorCANId = 11;
-    public static final int kFrontRightSteerMotorCANId = 8;
-    public static final int kBackRightSteerMotorCANId = 15;
+    public static final int kFrontLeftSteerMotorCANId = 2;
+    public static final int kFrontRightSteerMotorCANId = 3;
+    public static final int kBackRightSteerMotorCANId = 8;
     public static final int kBackLeftSteerMotorCANId = 6;
 
-    public static final int kFrontLeftDriveMotorCANId = 10;
-    public static final int kFrontRightDriveMotorCANId = 9;
-    public static final int kBackRightDriveMotorCANId = 14;
-    public static final int kBackLeftDriveMotorCANId = 7;
+    public static final int kFrontLeftDriveMotorCANId = 1;
+    public static final int kFrontRightDriveMotorCANId = 4;
+    public static final int kBackRightDriveMotorCANId = 7;
+    public static final int kBackLeftDriveMotorCANId = 5;
 
-    public static final int kFrontLeftCANcoderCANId = 20;
-    public static final int kFrontRightCANcoderCANId = 21;
-    public static final int kBackRightCANcoderCANId = 22;
-    public static final int kBackLeftCANcoderCANId = 23;
+    public static final int kFrontLeftCANcoderCANId = 31;
+    public static final int kFrontRightCANcoderCANId = 33;
+    public static final int kBackRightCANcoderCANId = 32;
+    public static final int kBackLeftCANcoderCANId = 34;
 
-    public static final double kFrontLeftCANcoderOffsetRad = 0.;
-    public static final double kFrontRightCANcoderOffsetRad = 0.;
-    public static final double kBackRightCANcoderOffsetRad = 0.;
-    public static final double kBackLeftCANcoderOffsetRad = 0.;
+    public static final double kFrontLeftCANcoderOffsetRad = 2.669; //0.313965;
+    public static final double kFrontRightCANcoderOffsetRad = 2.723; //0.366699;
+    public static final double kBackRightCANcoderOffsetRad = 0.159668;
+    public static final double kBackLeftCANcoderOffsetRad = -0.456055;
 
     public static final boolean kFrontLeftDriveMotorInverted = false;
     public static final boolean kBackLeftDriveMotorInverted = false;
@@ -77,11 +77,11 @@ public final class Constants {
     public static final double kPhysicalMaxSpeedMetersPerSecond = 5;
     public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 2 * 2 * Math.PI;
 
-    public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond / 4;
+    public static final double kTeleDriveMaxSpeedMetersPerSecond = 1;//kPhysicalMaxSpeedMetersPerSecond / 4;
     public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = //
             kPhysicalMaxAngularSpeedRadiansPerSecond / 4;
-    public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 3;
-    public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 3;
+    public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 1;//3;
+    public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 1;//3;
   }
 
   public static final class ModuleConstants {
@@ -92,7 +92,7 @@ public final class Constants {
     public static final double kTurningEncoderRot2Rad = kTurningMotorGearRatio * 2 * Math.PI;
     public static final double kDriveEncoderRPM2MeterPerSec = kDriveEncoderRot2Meter / 60;
     public static final double kTurningEncoderRPM2RadPerSec = kTurningEncoderRot2Rad / 60;
-    public static final double kPSteer = 0.5;
+    public static final double kPSteer = 0.1;//0.5;
 
     // NEO motor specs
     // Encoder resolution
@@ -100,7 +100,7 @@ public final class Constants {
   }
 
   public static final class DeviceConstants{
-    public static final int gyroscopeChannelId = 1;
+    public static final int gyroscopeChannelId = 0;
 
   }
   public static boolean simtest = false;

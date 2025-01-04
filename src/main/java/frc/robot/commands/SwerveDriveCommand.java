@@ -63,14 +63,15 @@ public class SwerveDriveCommand extends Command {
     turnSpeed = Math.abs(turnSpeed) > OperatorConstants.kDeadband ? turnSpeed : 0.0;
 
     // make driving smoother
+    /**/
     forwardSpeed = xLimiter.calculate(forwardSpeed) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond;
     leftSpeed = yLimiter.calculate(leftSpeed) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond;
     turnSpeed = turningLimiter.calculate(turnSpeed)
                 * DriveConstants.kTeleDriveMaxAngularSpeedRadiansPerSecond;
-
+    /**/
     // chasis speeds
     ChassisSpeeds chassisSpeeds = new ChassisSpeeds(forwardSpeed, leftSpeed, turnSpeed);
-    //m_swerve.showChasisSpeedsOnLogger("joystick");
+    m_swerve.showChasisSpeedsOnLogger("joystick");
     m_swerve.setChasisSpeeds(chassisSpeeds);
   }
 

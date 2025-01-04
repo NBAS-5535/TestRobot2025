@@ -50,7 +50,7 @@ public class RobotContainer {
                                                       () -> m_driverController.getRawAxis(OperatorConstants.kDriverXAxis),
                                                       () -> m_driverController.getRawAxis(OperatorConstants.kDriverRotAxis)
                                                       ));
-    if (!Constants.simtest) {
+    if (Constants.simtest) {
         m_driverController.b().onTrue(new SwerveDriveComboMoveCommand(m_swerveSubsystem, 0.25, 0., 0., 10.));
         m_driverController.a().onTrue(new SwerveDriveComboMoveCommand(m_swerveSubsystem, 0., 0., 0., 0.));
         m_driverController.x().onTrue(new SwerveDriveComboMoveCommand(m_swerveSubsystem, 0.25, 0., 0.3, 0.));
