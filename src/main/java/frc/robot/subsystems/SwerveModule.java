@@ -16,6 +16,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
 
+import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.SparkAbsoluteEncoder.Type;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
@@ -25,15 +27,21 @@ public class SwerveModule {
     private final CANSparkMax steerMotor;
 
     private final RelativeEncoder driveEncoder;
-    private final RelativeEncoder steerEncoder;
+    private final AbsoluteEncoder steerEncoder;
 
     private final PIDController steerPidController;
+
+    private final double absoluteEncoderOffsetRad;
+    private final boolean absoluteEncoderInverted;
 
     private SwerveModuleState currentState;
 
     public SwerveModule(int driveMotorCANId, int steerMotorCANId,
                         boolean driveMotorInverted, boolean steerMotorInverted,
-                        int absoluteEncoderCANid, double absoluteEncoderOffsetRad, boolean absoluteEncoderInverted) {
+                        int absoluteEncoderCANid, double absoluteEncoderOffset, boolean absoluteEncoderInverted) {
+
+        this.absoluteEncoderOffsetRad = absoluteEncoderOffset;
+        this.absoluteEncoderInverted = absoluteEncoderInverted;
 
         driveMotor = new CANSparkMax(driveMotorCANId, MotorType.kBrushless);
         steerMotor = new CANSparkMax(steerMotorCANId, MotorType.kBrushless);
@@ -45,7 +53,9 @@ public class SwerveModule {
         steerMotor.setInverted(steerMotorInverted);
 
         driveEncoder = driveMotor.getEncoder();
-        steerEncoder = steerMotor.getEncoder();
+        steerEncoder = steerMotor.getAbsoluteEncoder(Type.kDutyCycle);
+        steerEncoder.setInverted(absoluteEncoderInverted);
+        steerEncoder.setZeroOffset(absoluteEncoderOffsetRad);
             
         steerPidController = new PIDController(ModuleConstants.kPSteer, 0., 0.);
         steerPidController.enableContinuousInput(-Math.PI, Math.PI);
@@ -74,9 +84,15 @@ public class SwerveModule {
         return steerEncoder.getVelocity();
     }
 
+    public double getAbsoluteEncoderRad() {
+        double angle = steerEncoder.getVelocity() / RobotController.getVoltage5V();
+        angle *= 2.0 * Math.PI;
+        angle -= absoluteEncoderOffsetRad;
+        return angle * (absoluteEncoderInverted ? -1.0 : 1.0);
+    }
+
     public void resetEncoders() {
         driveEncoder.setPosition(0);
-        steerEncoder.setPosition(0.);
     }
 
     public SwerveModuleState getState1() {
